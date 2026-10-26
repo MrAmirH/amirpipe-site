@@ -4,31 +4,18 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
    امیرپایپ | مرجع تخصصی لوله‌کشی و تأسیسات مهندسی ساختمان
    تحت پوشش شرکت سینا برج بیژن (شماره ثبت ۳۷۲۰۵۰)
    ------------------------------------------------------------
-   متغیرهای محیطی (فایل .env):
-   VITE_GAPGPT_API_KEY=...
-   VITE_GAPGPT_BASE_URL=https://.../v1
-   VITE_GAPGPT_MODEL=gpt-4o-mini   (اختیاری)
+   تصاویر: پوشه public/images (مسیر در کد: /images/نام-فایل)
    ============================================================ */
 
 const PHONE_MAIN = "09123303743";
 const PHONE_BACKUP = "09900857057";
 const TELEGRAM_BOT = "https://t.me/Amirpipe_bot";
-const ADDRESS = "تهران، پیروزی، خیابان پیچک، پلاک ۱۰۴";
+const ADDRESS = "خیابان پیروزی، چهارصد دستگاه / نبرد";
+const MAP_URL = "https://nshn.ir/5fQbvgBYexRYmZ";
+const MODAL_TEXT = "امیرپایپ (سینا برج بیژن) | مشاوره و اجرا: ۰۹۱۲۳۳۰۳۷۴۳ - تلگرام: @Amirpipe_bot";
 
-const img = (id, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
-
-const IMG = {
-  pipes: "photo-1585704032915-c3400ca199e7",
-  plumber: "photo-1607472586893-edb57bdc0e39",
-  work: "photo-1621905251189-08b45d6a269e",
-  fix: "photo-1504328345606-18bbc8c9d7d1",
-  copper: "photo-1581244277943-fe4a9c777189",
-  site: "photo-1503387762-592deb58ef4e",
-  bathroom: "photo-1552321554-5fefe8c9ef14",
-  tools: "photo-1581092918056-0c4c3acd3789",
-  heating: "photo-1558618666-fcd25c85cd64",
-};
+// تصاویر محلی از پوشه public/images
+const imgSrc = (file) => `/images/${file}`;
 
 const NAV = [
   { id: "home", label: "صفحه اصلی" },
@@ -42,33 +29,33 @@ const NAV = [
 const FEATURED = [
   {
     title: "لوله‌کشی کامل برج مسکونی ۱۲ طبقه",
-    area: "منطقه ۳ تهران - ونک",
     desc: "اجرای کامل لوله‌کشی آب سرد و گرم، فاضلاب و کلکتورها با لوله پنج‌لایه و تست فشار.",
-    img: IMG.site,
+    img: "manifold-1.webp",
+    alt: "لوله‌کشی کلکتوری برج مسکونی توسط امیرپایپ",
   },
   {
     title: "اجرای گرمایش از کف ویلای لوکس",
-    area: "منطقه ۱ تهران - شمیران",
     desc: "طراحی و اجرای گرمایش از کف با کلکتور مرکزی، کنترل دمای هر اتاق و ضمانت‌نامه کتبی.",
-    img: IMG.heating,
+    img: "heating.webp",
+    alt: "اجرای گرمایش از کف توسط امیرپایپ",
   },
   {
     title: "بازسازی کامل تأسیسات آپارتمان قدیمی",
-    area: "منطقه ۶ تهران - جمهوری",
     desc: "تعویض لوله‌های گالوانیزه فرسوده با پوش‌فیت، بدون خرابی غیرضروری و با تحویل تمیز.",
-    img: IMG.pipes,
+    img: "pipe-floor-1.webp",
+    alt: "بازسازی تأسیسات ساختمان توسط امیرپایپ",
   },
   {
     title: "موتورخانه و پمپ‌های مجتمع تجاری",
-    area: "منطقه ۷ تهران - پیروزی",
     desc: "نصب و راه‌اندازی پمپ‌های بوستر، مخزن ذخیره آب و سیستم کنترل فشار.",
-    img: IMG.tools,
+    img: "pump-1.webp",
+    alt: "نصب پمپ و موتورخانه توسط امیرپایپ",
   },
   {
     title: "نشت‌یابی و ترمیم لوله ترکیده ساختمان اداری",
-    area: "منطقه ۱۱ تهران - انقلاب",
     desc: "تشخیص دقیق محل نشت با دستگاه دیجیتال و تعمیر با حداقل تخریب.",
-    img: IMG.fix,
+    img: "drain-1.webp",
+    alt: "نشت‌یابی و ترمیم لوله توسط امیرپایپ",
   },
 ];
 
@@ -129,16 +116,22 @@ const CATEGORIES = [
 ];
 
 const GALLERY = [
-  { id: 1, cat: "sewage", title: "فاضلاب‌کشی پوش‌فیت ساختمان ۵ واحدی", loc: "منطقه ۵ - شهرک غرب", img: IMG.pipes, desc: "اجرای کامل شبکه فاضلاب با لوله و اتصالات پوش‌فیت، شیب‌بندی استاندارد و تست آب‌بندی پیش از پوشش." },
-  { id: 2, cat: "sewage", title: "لوله‌کشی پلیکا آپارتمان نوساز", loc: "منطقه ۴ - تهرانپارس", img: IMG.work, desc: "نصب لوله‌های پلیکا با رعایت مبحث ۱۶ مقررات ملی ساختمان و عایق‌کاری صوتی." },
-  { id: 3, cat: "pump", title: "نصب پمپ بوستر و مخزن ذخیره", loc: "منطقه ۲ - سعادت‌آباد", img: IMG.tools, desc: "نصب پمپ بوستر، مخزن ۲ هزار لیتری و تابلوی کنترل فشار برای مجتمع مسکونی." },
-  { id: 4, cat: "pump", title: "راه‌اندازی سیستم پمپاژ و ذخیره آب", loc: "منطقه ۸ - نارمک", img: IMG.site, desc: "اجرای سیستم پمپاژ دوبله با قابلیت سوییچ خودکار و حفاظت از کارکرد بی‌آب." },
-  { id: 5, cat: "collector", title: "کلکتورکشی و گرمایش از کف", loc: "منطقه ۱ - زعفرانیه", img: IMG.heating, desc: "اجرای لوله‌کشی کلکتوری با شیرهای قطع‌وصل مستقل برای هر واحد مصرف و تست فشار ۲۴ ساعته." },
-  { id: 6, cat: "collector", title: "لوله‌کشی کلکتوری واحد مسکونی", loc: "منطقه ۳ - الهیه", img: IMG.copper, desc: "کلکتور مرکزی آب سرد و گرم با لوله‌های پنج‌لایه و برچسب‌گذاری مسیرها." },
-  { id: 7, cat: "meter", title: "تفکیک کنتور آب ساختمان چندواحدی", loc: "منطقه ۶ - امیرآباد", img: IMG.fix, desc: "انشعاب‌گیری و تفکیک کنتور آب هر واحد با هماهنگی کامل مراحل اداری." },
-  { id: 8, cat: "meter", title: "انشعابات آب و گاز مجتمع", loc: "منطقه ۷ - پیروزی", img: IMG.plumber, desc: "اجرای انشعابات اصولی آب و گاز مطابق با ضوابط شرکت‌های مربوطه." },
-  { id: 9, cat: "wallhung", title: "زیرسازی و نصب توالت وال‌هنگ", loc: "منطقه ۲ - پونک", img: IMG.bathroom, desc: "نصب شاسی فلزی توکار، تنظیم ارتفاع و آب‌بندی کامل با ضمانت نصب." },
-  { id: 10, cat: "wallhung", title: "سرویس بهداشتی مدرن با فلاش‌تانک توکار", loc: "منطقه ۱ - تجریش", img: IMG.bathroom, desc: "بازسازی سرویس بهداشتی و نصب توالت توکار با سرامیک‌کاری تمیز و حرفه‌ای." },
+  { id: 1, cat: "sewage", title: "فاضلاب‌کشی پوش‌فیت ساختمان ۵ واحدی", img: "drain-1.webp", alt: "فاضلاب‌کشی پوش‌فیت ساختمان ۵ واحدی - امیرپایپ", desc: "اجرای کامل شبکه فاضلاب با لوله و اتصالات پوش‌فیت، شیب‌بندی استاندارد و تست آب‌بندی پیش از پوشش." },
+  { id: 2, cat: "sewage", title: "لوله‌کشی پلیکا آپارتمان نوساز", img: "drain-2.webp", alt: "لوله‌کشی پلیکا آپارتمان نوساز - امیرپایپ", desc: "نصب لوله‌های پلیکا با رعایت مبحث ۱۶ مقررات ملی ساختمان و عایق‌کاری صوتی." },
+  { id: 3, cat: "sewage", title: "اجرای شبکه فاضلاب ساختمان (نمونه ۳)", img: "drain-3.webp", alt: "خدمات لوله‌کشی فاضلاب امیرپایپ - نمونه ۳", desc: "اجرای لوله‌کشی فاضلاب ساختمان با شیب‌بندی استاندارد و اتصالات مرغوب." },
+  { id: 4, cat: "sewage", title: "اجرای شبکه فاضلاب ساختمان (نمونه ۴)", img: "drain-4.webp", alt: "خدمات لوله‌کشی فاضلاب امیرپایپ - نمونه ۴", desc: "اجرای لوله‌کشی فاضلاب ساختمان با شیب‌بندی استاندارد و اتصالات مرغوب." },
+  { id: 5, cat: "pump", title: "نصب پمپ بوستر و مخزن ذخیره", img: "pump-1.webp", alt: "نصب پمپ بوستر و مخزن ذخیره - امیرپایپ", desc: "نصب پمپ بوستر، مخزن ۲ هزار لیتری و تابلوی کنترل فشار برای مجتمع مسکونی." },
+  { id: 6, cat: "pump", title: "راه‌اندازی سیستم پمپاژ و ذخیره آب", img: "pump-2.webp", alt: "راه‌اندازی سیستم پمپاژ و ذخیره آب - امیرپایپ", desc: "اجرای سیستم پمپاژ دوبله با قابلیت سوییچ خودکار و حفاظت از کارکرد بی‌آب." },
+  { id: 7, cat: "pump", title: "نصب پمپ آب ساختمان (نمونه ۳)", img: "pump-3.webp", alt: "خدمات نصب پمپ آب امیرپایپ - نمونه ۳", desc: "نصب و راه‌اندازی پمپ آب با لوله‌کشی اصولی و تست کامل." },
+  { id: 8, cat: "pump", title: "نصب پمپ آب ساختمان (نمونه ۴)", img: "pump-4.webp", alt: "خدمات نصب پمپ آب امیرپایپ - نمونه ۴", desc: "نصب و راه‌اندازی پمپ آب با لوله‌کشی اصولی و تست کامل." },
+  { id: 9, cat: "collector", title: "لوله‌کشی کلکتوری واحد مسکونی", img: "manifold-1.webp", alt: "لوله‌کشی کلکتوری واحد مسکونی - امیرپایپ", desc: "کلکتور مرکزی آب سرد و گرم با لوله‌های پنج‌لایه و برچسب‌گذاری مسیرها." },
+  { id: 10, cat: "collector", title: "کلکتورکشی آب سرد و گرم (نمونه ۲)", img: "manifold-2.webp", alt: "خدمات لوله‌کشی کلکتوری امیرپایپ - نمونه ۲", desc: "اجرای کلکتور با شیرهای قطع‌وصل مستقل و مسیرهای مشخص برای هر مصرف‌کننده." },
+  { id: 11, cat: "collector", title: "کلکتورکشی و گرمایش از کف", img: "heating.webp", alt: "کلکتورکشی و گرمایش از کف - امیرپایپ", desc: "اجرای لوله‌کشی کلکتوری با شیرهای قطع‌وصل مستقل برای هر واحد مصرف و تست فشار ۲۴ ساعته." },
+  { id: 12, cat: "collector", title: "اجرای لوله گرمایش از کف", img: "pipe-floor-1.webp", alt: "خدمات گرمایش از کف امیرپایپ", desc: "پخش لوله گرمایش از کف با فواصل استاندارد و تست فشار پیش از پوشش." },
+  { id: 13, cat: "meter", title: "تفکیک کنتور آب ساختمان چندواحدی", img: "meter-1.webp", alt: "تفکیک کنتور آب ساختمان چندواحدی - امیرپایپ", desc: "انشعاب‌گیری و تفکیک کنتور آب هر واحد با هماهنگی کامل مراحل اداری." },
+  { id: 14, cat: "meter", title: "انشعابات آب و گاز مجتمع", img: "meter-2.webp", alt: "انشعابات آب و گاز مجتمع - امیرپایپ", desc: "اجرای انشعابات اصولی آب و گاز مطابق با ضوابط شرکت‌های مربوطه." },
+  { id: 15, cat: "meter", title: "تفکیک کنتور و انشعابات (نمونه ۳)", img: "meter-3.webp", alt: "خدمات تفکیک کنتور امیرپایپ - نمونه ۳", desc: "اجرای انشعابات و نصب کنتور با رعایت ضوابط و استانداردهای مربوطه." },
+  { id: 16, cat: "wallhung", title: "زیرسازی و نصب توالت وال‌هنگ", img: "wallhung-1.webp", alt: "زیرسازی و نصب توالت وال‌هنگ - امیرپایپ", desc: "نصب شاسی فلزی توکار، تنظیم ارتفاع و آب‌بندی کامل با ضمانت نصب." },
 ];
 
 const ICONS = {
@@ -154,8 +147,6 @@ const ICONS = {
   clock: "M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v5.400l4 2.300-.8 1.400L11 13V7z",
   shield: "M12 2l8 3v6c0 5-3.400 9.500-8 11-4.600-1.500-8-6-8-11V5l8-3zm-1 13l6-6-1.400-1.400L11 12.200 8.400 9.600 7 11l4 4z",
   check: "M5 12l5 5L20 7",
-  send: "M3 20l18-8L3 4v6l12 2-12 2z",
-  chat: "M4 4h16a2 2 0 012 2v10a2 2 0 01-2 2H9l-5 4v-4H4a2 2 0 01-2-2V6a2 2 0 012-2z",
   insta: "M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm5.500-3.500a1 1 0 100 2 1 1 0 000-2z",
   whatsapp: "M12 2a10 10 0 00-8.600 15.100L2 22l5-1.300A10 10 0 1012 2zm5 13.500c-.2.600-1.200 1.200-1.700 1.200-.5.100-1 .2-3.300-.7-2.800-1.100-4.600-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 2c.1.200.1.400 0 .6l-.4.600c-.2.200-.3.400-.1.700.2.300.8 1.300 1.800 2.100 1.200 1 2.200 1.300 2.500 1.500.3.100.5.100.7-.1l.9-1.100c.2-.3.400-.2.700-.1l1.900.9c.3.100.5.200.6.300.1.200.1.800-.1 1.400z",
   linkedin: "M4 3a2 2 0 110 4 2 2 0 010-4zM2 9h4v12H2zm7 0h4v1.700c.6-1 1.900-2 3.800-2 4 0 4.200 2.600 4.200 5.300V21h-4v-6c0-1.400 0-3-1.900-3s-2.100 1.400-2.100 2.900V21H9z",
@@ -343,7 +334,32 @@ function Hero() {
 /* ============================================================
    Featured Carousel
    ============================================================ */
-function Carousel({ onContact }) {
+function ImageModal({ item, onClose }) {
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div className="lightbox" onClick={onClose} role="dialog" aria-modal="true" aria-label={item.title}>
+      <div className="lb-box glass" onClick={(e) => e.stopPropagation()}>
+        <button className="lb-close" onClick={onClose} aria-label="بستن"><Icon name="close" stroke size={22} /></button>
+        <div className="lb-img"><SafeImg src={imgSrc(item.img)} alt={item.alt} /></div>
+        <div className="lb-body">
+          <p className="lb-contact">{MODAL_TEXT}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Carousel() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [dragX, setDragX] = useState(0);
@@ -352,6 +368,8 @@ function Carousel({ onContact }) {
   const moved = useRef(false);
   const trackRef = useRef(null);
   const count = FEATURED.length;
+  const [modal, setModal] = useState(null);
+  const closeModal = useCallback(() => setModal(null), []);
 
   const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
   const prev = useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
@@ -363,6 +381,7 @@ function Carousel({ onContact }) {
   }, [paused, dragging, next]);
 
   const onDown = (e) => {
+    if (e.target.closest("button")) return;
     setDragging(true);
     moved.current = false;
     startX.current = e.clientX;
@@ -389,7 +408,7 @@ function Carousel({ onContact }) {
   return (
     <section id="featured" className="section featured">
       <div className="container">
-        <SectionHead kicker="نمونه اجراهای شاخص" title="پروژه‌های برتر امیر پایپ" sub="نگاهی به بخشی از پروژه‌های موفق اجراشده در مناطق مختلف تهران" />
+        <SectionHead kicker="نمونه اجراهای شاخص" title="پروژه‌های برتر امیر پایپ" sub="نگاهی به بخشی از پروژه‌های موفق اجراشده توسط امیر پایپ" />
 
         <div
           className="carousel glass"
@@ -416,14 +435,13 @@ function Carousel({ onContact }) {
               {FEATURED.map((p, i) => (
                 <article className="slide" key={p.title} aria-hidden={i !== index} dir="rtl">
                   <div className="slide-img">
-                    <SafeImg src={img(p.img)} alt={p.title} />
+                    <SafeImg src={imgSrc(p.img)} alt={p.alt} />
                     <span className="slide-num">{String(i + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}</span>
                   </div>
                   <div className="slide-body">
-                    <span className="tag"><Icon name="pin" size={14} /> {p.area}</span>
                     <h3>{p.title}</h3>
                     <p>{p.desc}</p>
-                    <button className="btn btn-blue" onClick={() => !moved.current && onContact()}>
+                    <button className="btn btn-blue" onClick={() => !moved.current && setModal(p)}>
                       مشاهده جزئیات و مشاوره
                     </button>
                   </div>
@@ -442,6 +460,8 @@ function Carousel({ onContact }) {
           </div>
         </div>
       </div>
+
+      {modal && <ImageModal item={modal} onClose={closeModal} />}
     </section>
   );
 }
@@ -522,10 +542,9 @@ function Gallery() {
         <div className="gallery-grid">
           {list.map((g) => (
             <button key={g.id} className="g-card" onClick={() => setActive(g)} aria-label={`مشاهده ${g.title}`}>
-              <SafeImg src={img(g.img, 800)} alt={g.title} />
+              <SafeImg src={imgSrc(g.img)} alt={g.alt} />
               <span className="g-zoom"><Icon name="zoom" size={22} /></span>
               <span className="g-info">
-                <span className="tag small"><Icon name="pin" size={12} /> {g.loc}</span>
                 <strong>{g.title}</strong>
               </span>
             </button>
@@ -538,9 +557,8 @@ function Gallery() {
         <div className="lightbox" onClick={() => setActive(null)} role="dialog" aria-modal="true" aria-label={active.title}>
           <div className="lb-box glass" onClick={(e) => e.stopPropagation()}>
             <button className="lb-close" onClick={() => setActive(null)} aria-label="بستن"><Icon name="close" stroke size={22} /></button>
-            <div className="lb-img"><SafeImg src={img(active.img, 1600)} alt={active.title} /></div>
+            <div className="lb-img"><SafeImg src={imgSrc(active.img)} alt={active.alt} /></div>
             <div className="lb-body">
-              <span className="tag"><Icon name="pin" size={14} /> {active.loc}</span>
               <h3>{active.title}</h3>
               <p>{active.desc}</p>
               <a href={toTel(PHONE_MAIN)} className="btn btn-red btn-lg">
@@ -629,7 +647,7 @@ function Contact() {
           <div className="card glass">
             <div className="info-row">
               <span className="info-ico"><Icon name="pin" size={22} /></span>
-              <div><small>آدرس دقیق</small><p>{ADDRESS}</p></div>
+              <div><small>آدرس دقیق</small><p><a href={MAP_URL} target="_blank" rel="noopener noreferrer">{ADDRESS}</a></p></div>
             </div>
             <div className="info-row">
               <span className="info-ico red"><Icon name="clock" size={22} /></span>
@@ -638,12 +656,9 @@ function Contact() {
                 <p>پاسخگویی و اعزام نیرو به‌صورت شبانه‌روزی (۲۴ ساعته / ۷ روز هفته)</p>
               </div>
             </div>
-            <iframe
-              title="موقعیت امیر پایپ"
-              className="map"
-              loading="lazy"
-              src={`https://www.google.com/maps?q=${encodeURIComponent("تهران، پیروزی، خیابان پیچک")}&output=embed`}
-            />
+            <a href={MAP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-blue block">
+              <Icon name="pin" size={20} /> مشاهده آدرس روی نقشه
+            </a>
           </div>
         </div>
       </div>
@@ -652,95 +667,20 @@ function Contact() {
 }
 
 /* ============================================================
-   AI Chat Widget
+   Telegram bot button (جایگزین پنل چت هوش مصنوعی غیرفعال)
    ============================================================ */
-const SYSTEM_PROMPT = `تو دستیار هوشمند «امیر پایپ» هستی؛ مجموعه تخصصی لوله‌کشی و تأسیسات ساختمان در تهران، تحت پوشش شرکت سینا برج بیژن (شماره ثبت ۳۷۲۰۵۰).
-خدمات: لوله‌کشی آب و فاضلاب و گاز و شوفاژ (پنج‌لایه، پوش‌فیت، پلیکا، پلی‌پروپیلن، گرمایش از کف)، مرمت و بازسازی، نصب و تعمیر موتورخانه و پکیج و آبگرمکن و شیرآلات، نشت‌یابی دیجیتال، لوله‌بازکنی بدون خرابی، جوشکاری تأسیساتی، پمپ و مخزن، تفکیک کنتور، نصب وال‌هنگ.
-قوانین: فارسی، محترمانه و کوتاه پاسخ بده. درباره نحوه اجرای کار توضیح فنی ساده بده. برای هزینه، فقط بازه‌های کلی و غیرقطعی بگو و تاکید کن قیمت دقیق پس از بازدید کارشناس مشخص می‌شود و نباید عدد قطعی تعهد کنی. در پایان در صورت نیاز مشتری را به تماس با ${PHONE_MAIN} یا بات تلگرام ${TELEGRAM_BOT} هدایت کن. اطلاعات ساختگی نده.`;
-
-function ChatWidget() {
-  const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: "assistant", content: "سلام! من دستیار هوشمند امیر پایپ هستم. درباره هزینه، نحوه اجرا یا مشکل لوله‌کشی‌تان بپرسید." },
-  ]);
-  const endRef = useRef(null);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, loading, open]);
-
-  const send = async (e) => {
-    e?.preventDefault();
-    const text = input.trim();
-    if (!text || loading) return;
-
-    const apiKey = import.meta.env.VITE_GAPGPT_API_KEY;
-    const baseUrl = (import.meta.env.VITE_GAPGPT_BASE_URL || "").replace(/\/+$/, "");
-    const model = import.meta.env.VITE_GAPGPT_MODEL || "gpt-4o-mini";
-
-    const history = [...messages, { role: "user", content: text }];
-    setMessages(history);
-    setInput("");
-
-    if (!apiKey || !baseUrl) {
-      setMessages([...history, { role: "assistant", content: `تنظیمات اتصال هوش مصنوعی کامل نیست. لطفاً با شماره ${PHONE_MAIN} تماس بگیرید.` }]);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch(`${baseUrl}/chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model,
-          temperature: 0.5,
-          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...history.slice(-12)],
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const reply = data?.choices?.[0]?.message?.content?.trim() || "پاسخی دریافت نشد. لطفاً دوباره تلاش کنید.";
-      setMessages([...history, { role: "assistant", content: reply }]);
-    } catch {
-      setMessages([...history, { role: "assistant", content: `متأسفانه ارتباط برقرار نشد. برای پاسخ سریع با ${PHONE_MAIN} تماس بگیرید.` }]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function TelegramButton() {
   return (
-    <>
-      {open && (
-        <div className="chat glass-dark" role="dialog" aria-label="چت هوش مصنوعی امیر پایپ">
-          <div className="chat-head">
-            <Logo small />
-            <div>
-              <strong>دستیار هوشمند امیر پایپ</strong>
-              <small><span className="live-dot" /> آنلاین</small>
-            </div>
-            <button onClick={() => setOpen(false)} aria-label="بستن چت"><Icon name="close" stroke size={20} /></button>
-          </div>
-          <div className="chat-body">
-            {messages.map((m, i) => (
-              <div key={i} className={`msg ${m.role}`}>{m.content}</div>
-            ))}
-            {loading && <div className="msg assistant typing"><i /><i /><i /></div>}
-            <div ref={endRef} />
-          </div>
-          <form className="chat-form" onSubmit={send}>
-            <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="سوال خود را بنویسید..." aria-label="پیام" />
-            <button type="submit" disabled={loading || !input.trim()} aria-label="ارسال"><Icon name="send" size={20} className="flip" /></button>
-          </form>
-        </div>
-      )}
-      <button className="chat-fab" onClick={() => setOpen(!open)} aria-label="گفتگو با دستیار هوشمند">
-        <Icon name={open ? "close" : "chat"} stroke={open} size={26} />
-        {!open && <span className="fab-label">پرسش از هوش مصنوعی</span>}
-      </button>
-    </>
+    <a
+      className="tg-fab"
+      href={TELEGRAM_BOT}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="ارتباط مستقیم با امیرپایپ در تلگرام"
+    >
+      <Icon name="telegram" size={26} />
+      <span className="fab-label">گفتگو در تلگرام</span>
+    </a>
   );
 }
 
@@ -778,7 +718,7 @@ function Footer({ onNav }) {
           <ul className="f-contact">
             <li><a href={toTel(PHONE_MAIN)} dir="ltr">{PHONE_MAIN}</a></li>
             <li><a href={toTel(PHONE_BACKUP)} dir="ltr">{PHONE_BACKUP}</a></li>
-            <li>{ADDRESS}</li>
+            <li><a href={MAP_URL} target="_blank" rel="noopener noreferrer">{ADDRESS}</a></li>
             <li>شبانه‌روزی، ۷ روز هفته</li>
           </ul>
         </div>
@@ -827,14 +767,14 @@ export default function App() {
       <Header active={active} onNav={scrollTo} />
       <main>
         <Hero />
-        <Carousel onContact={() => scrollTo("contact")} />
+        <Carousel />
         <Services />
         <Gallery />
         <About />
         <Contact />
       </main>
       <Footer onNav={scrollTo} />
-      <ChatWidget />
+      <TelegramButton />
     </div>
   );
 }
@@ -1004,6 +944,7 @@ const CSS = `
 .lb-body{padding:1.6rem 2rem 2rem;display:flex;flex-direction:column;gap:.8rem;align-items:flex-start}
 .lb-body h3{font-size:1.4rem;font-weight:900;color:var(--brand)}
 .lb-body p{color:var(--muted)}
+.lb-body .lb-contact{color:var(--brand);font-weight:800;font-size:1.05rem;line-height:2}
 
 /* about */
 .about{background:#fff}
@@ -1057,30 +998,10 @@ const CSS = `
 .to-top.show{opacity:1;pointer-events:auto;transform:none}
 .to-top:hover{background:var(--red)}
 
-/* chat */
-.chat-fab{position:fixed;bottom:24px;right:24px;z-index:70;display:flex;align-items:center;gap:.6rem;padding:.9rem 1.2rem;border-radius:99px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--red-600),var(--red));box-shadow:0 12px 34px rgba(162,5,21,.55);transition:.25s}
-.chat-fab:hover{transform:translateY(-3px) scale(1.03)}
+/* telegram button */
+.app .tg-fab{position:fixed;bottom:24px;right:24px;z-index:70;display:flex;align-items:center;gap:.6rem;padding:.9rem 1.2rem;border-radius:99px;color:#fff;font-weight:700;background:linear-gradient(135deg,var(--red-600),var(--red));box-shadow:0 12px 34px rgba(162,5,21,.55);transition:.25s}
+.app .tg-fab:hover{transform:translateY(-3px) scale(1.03)}
 .fab-label{font-size:.88rem}
-.chat{position:fixed;bottom:96px;right:24px;z-index:70;width:min(380px,calc(100vw - 32px));height:min(540px,calc(100vh - 130px));border-radius:24px;display:flex;flex-direction:column;overflow:hidden;animation:pop .3s}
-.chat-head{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;background:linear-gradient(135deg,var(--blue-700),var(--brand))}
-.chat-head div{display:flex;flex-direction:column;line-height:1.4;flex:1}
-.chat-head small{font-size:.75rem;opacity:.85;display:flex;align-items:center}
-.chat-head button{color:#fff;opacity:.85}
-.chat-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.7rem}
-.msg{max-width:85%;padding:.65rem .95rem;border-radius:18px;font-size:.92rem;line-height:1.85;white-space:pre-wrap;word-break:break-word}
-.msg.assistant{background:rgba(255,255,255,.12);align-self:flex-start;border-top-right-radius:4px}
-.msg.user{background:linear-gradient(135deg,var(--red-600),var(--red));align-self:flex-end;border-top-left-radius:4px}
-.typing{display:flex;gap:5px;padding:.9rem 1rem}
-.typing i{width:8px;height:8px;border-radius:50%;background:#fff;opacity:.5;animation:bounce 1s infinite}
-.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-@keyframes bounce{40%{transform:translateY(-6px);opacity:1}}
-.chat-form{display:flex;gap:.5rem;padding:.8rem;border-top:1px solid rgba(255,255,255,.12)}
-.chat-form input{flex:1;min-width:0;font-family:inherit;padding:.7rem 1rem;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;outline:none;font-size:.92rem}
-.chat-form input::placeholder{color:rgba(255,255,255,.5)}
-.chat-form input:focus{border-color:#fff}
-.chat-form button{width:46px;border-radius:14px;display:grid;place-items:center;color:#fff;background:var(--red-600)}
-.chat-form button:disabled{opacity:.4;cursor:not-allowed}
-.flip{transform:scaleX(-1)}
 
 /* responsive */
 @media(max-width:1000px){
@@ -1102,7 +1023,7 @@ const CSS = `
   .footer-grid{grid-template-columns:1fr}
   .section{padding:3.5rem 0}
   .fab-label{display:none}
-  .chat-fab{padding:.95rem}
+  .app .tg-fab{padding:.95rem}
   .hero{padding:3rem 0 4rem}
 }
 @media(prefers-reduced-motion:reduce){.app *{animation:none!important;transition:none!important}}
